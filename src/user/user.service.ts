@@ -14,13 +14,17 @@ export class UsersService {
     private prisma: PrismaService,
     private accountService: AccountService,
     private transactionService: TransactionService,
-  ) {}
+  ) { }
 
   private generateUniqueAccountNumber(): string {
     return Math.floor(1000000000 + Math.random() * 9000000000).toString();
   }
 
-  // Criação do usuário e uma conta vinculada
+  /**
+   * Cria um novo usuário e uma conta associada.
+   * @param data - Dados para criação do usuário (nome, email e senha)
+   * @returns Objeto do usuário criado (sem senha) e conta vinculada
+  */
   async createUser(data: CreateUserDto) {
     this.logger.log(`Starting user creation for email: ${data.email}`);
 
@@ -59,6 +63,11 @@ export class UsersService {
     return { ...userWithoutPassword, account };
   }
 
+  /**
+   * Busca um usuário pelo e-mail.
+   * @param email - Email do usuário
+   * @returns Usuário com senha (usado internamente para autenticação)
+  */
   async findByEmail(email: string) {
     this.logger.log(`Searching for user by email: ${email}`);
 
@@ -72,6 +81,11 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Busca um usuário pelo ID.
+   * @param id - ID numérico do usuário
+   * @returns Objeto do usuário, ou exceção se não encontrado
+  */
   async findById(id: number) {
     this.logger.log(`Searching for user with ID: ${id}`);
 
@@ -85,6 +99,11 @@ export class UsersService {
     return user;
   }
 
+  /**
+   * Busca um usuário pelo número da conta.
+   * @param accountNumber - Número da conta do usuário
+   * @returns Objeto do usuário (sem senha)
+  */
   async findByAccountNumber(accountNumber: string) {
     this.logger.log(`Searching for user by account number: ${accountNumber}`);
 
@@ -102,11 +121,21 @@ export class UsersService {
     return userWithoutPassword;
   }
 
+  /**
+   * Lista todos os usuários cadastrados no sistema.
+   * @returns Array de usuários
+  */
   async getAllUsers() {
     this.logger.log('Listing all users');
     return this.prisma.user.findMany();
   }
 
+  /**
+   * Atualiza os dados de um usuário com base no número da conta.
+   * @param accountNumber - Número da conta do usuário
+   * @param updateData - Dados que serão atualizados
+   * @returns Usuário atualizado
+  */
   async updateUserByAccountNumber(accountNumber: string, updateData: UpdateUserDto) {
     this.logger.log(`Updating user by account number: ${accountNumber}`);
 
@@ -134,6 +163,11 @@ export class UsersService {
     return updatedUser;
   }
 
+  /**
+   * Deleta um usuário e todos os seus dados (conta e transações).
+   * @param accountNumber - Número da conta do usuário
+   * @returns Objeto do usuário deletado
+  */
   async deleteUserByAccountNumber(accountNumber: string) {
     this.logger.log(`Deleting user by account number: ${accountNumber}`);
 
