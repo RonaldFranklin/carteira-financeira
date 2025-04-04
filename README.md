@@ -52,9 +52,12 @@ O diagrama abaixo representa a modelagem do banco de dados usada na aplicação:
 - **Tabela Transaction**:
 
   - `id`: Chave Primária (UUID)
-  - `amount`: 
+  - `amount`: Valor transferido entre contas
   - `status`: Status atual da transação (ex.: "SUCCESS", "CANCELLED", "PENDING")
+  - `senderAccountId`: ID da conta remetente (chave estrangeira para a tabela Account)
+  - `receiverAccountId`: ID da conta destinatária (chave estrangeira para a tabela Account)
   - `createdAt`: Data de criação da transação
+  - `updatedAt`: Data da última atualização da transação
 
 ---
 
