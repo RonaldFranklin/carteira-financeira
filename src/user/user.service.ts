@@ -189,4 +189,27 @@ export class UsersService {
 
     return deletedUser;
   }
+
+
+  /**
+   * Retorna todas as informações de um usuário a partir do seu e-mail,
+   * incluindo os dados da conta associada.
+   *
+   * @param email - Endereço de e-mail do usuário
+   * @returns Objeto do usuário (sem senha) com os dados da conta vinculada
+   * @throws BadRequestException - Se o usuário não for encontrado
+  */
+  async getFullUserInfoByEmail(email: string) {
+    this.logger.log(`Fetching full user info for email: ${email}`);
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { account: true },
+    });
+    if (!user) {
+      this.logger.warn(`User with email ${email} not found`);
+      throw new BadRequestException('User not found');
+    }
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
 }

@@ -106,3 +106,6 @@ O diagrama abaixo representa a modelagem do banco de dados usada na aplicação:
    ```bash
    docker compose up
    ```
+5. **Outros**
+   Após a aplicação estar rodando, você pode acessar a documentação da API pelo Swagger em http://localhost:3000/api .
+   Collection da api pode ser encontrada na raiz do projeto.

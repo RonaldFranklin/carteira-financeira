@@ -1,18 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+
   const config = new DocumentBuilder()
-    .setTitle('API Carteira Financeira')
-    .setDescription('Documentação da API de um sistema bancário fictício')
+    .setTitle('Banco API')
+    .setDescription('API de gerenciamento de contas, usuários e transações')
     .setVersion('1.0')
-    .addBearerAuth() // habilita autenticação via JWT no Swagger
+    .addBearerAuth() // Adiciona o campo Authorization (Bearer Token)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document); // Documentação disponível em /api
+
+  await app.listen(3000);
 }
 bootstrap();
