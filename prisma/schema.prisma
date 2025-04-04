@@ -1,10 +1,11 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model User {
@@ -25,7 +26,7 @@ model Account {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  user       User      @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     Int       @unique
 
   sentTransactions     Transaction[] @relation("SentTransactions")
@@ -38,9 +39,9 @@ model Transaction {
   status             String   // Ex: "SUCCESS", "CANCELLED", "PENDING"
   createdAt          DateTime @default(now())
 
-  senderAccount      Account  @relation("SentTransactions", fields: [senderAccountId], references: [id])
+  senderAccount      Account  @relation("SentTransactions", fields: [senderAccountId], references: [id], onDelete: Cascade)
   senderAccountId    Int
 
-  receiverAccount    Account  @relation("ReceivedTransactions", fields: [receiverAccountId], references: [id])
+  receiverAccount    Account  @relation("ReceivedTransactions", fields: [receiverAccountId], references: [id], onDelete: Cascade)
   receiverAccountId  Int
 }

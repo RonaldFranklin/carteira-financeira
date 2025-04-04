@@ -6,7 +6,7 @@ import { CreateTransactionDto } from './dto/create-transaction.dto';
 export class TransactionService {
   private readonly logger = new Logger(TransactionService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // Debits the sender's account, credits the receiver's account and records the transaction for potential reversal
   async createTransaction(createTransactionDto: CreateTransactionDto) {
@@ -138,5 +138,24 @@ export class TransactionService {
       throw new BadRequestException("This transaction is not associated with the user's account");
     }
     return transaction;
+  }
+
+  async deleteAllUserTransactions(userId: number) {
+    const account = await this.prisma.account.findUnique({
+      where: { userId },
+    });
+
+    if (!account) return;
+
+    await this.prisma.transaction.deleteMany({
+      where: {
+        OR: [
+          { senderAccountId: account.id },
+          { receiverAccountId: account.id },
+        ],
+      },
+    });
+
+    this.logger.log(`All transactions for user ${userId} deleted`);
   }
 }

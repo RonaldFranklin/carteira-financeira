@@ -1,11 +1,12 @@
 version: '3.8'
+
 services:
   postgres:
-    image: postgres
+    image: postgres:14
     container_name: carteira-postgres
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: carteira_financeira
     ports:
       - "5432:5432"
@@ -13,16 +14,18 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - app-network
-  api:
+  app:
     build: .
     container_name: carteira-api
     command: >
-      sh -c "npx prisma migrate deploy &&
-             npm run start:dev"
+      sh -c "sleep 5 &&
+         npx prisma generate &&
+         npx prisma migrate deploy &&
+         npm run start:dev"
     env_file:
       - .env
-    volumes: 
-      - .:/api
+    volumes:
+      - .:/app
     ports:
       - "3000:3000"
     depends_on:

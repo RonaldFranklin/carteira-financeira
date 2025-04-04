@@ -8,27 +8,25 @@ import { AuthGuard } from '@nestjs/passport';
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  // Endpoint to get the account associated with a user
-  @Get(':userId')
-  async getAccount(@Param('userId') userId: string) {
-    return this.accountService.getAccountByUserId(Number(userId));
+  @Get(':accountNumber')
+  async getAccount(@Param('accountNumber') accountNumber: string) {
+    return this.accountService.getAccountByNumber(accountNumber);
   }
 
-  // Endpoint for deposit
-  @Post('deposit/:userId')
+  @Post('deposit/:accountNumber')
   async deposit(
-    @Param('userId') userId: string,
+    @Param('accountNumber') accountNumber: string,
     @Body() updateAccountDto: UpdateAccountDto,
   ) {
-    return this.accountService.deposit(Number(userId), updateAccountDto.amount);
+    return this.accountService.deposit(accountNumber, updateAccountDto.amount);
   }
 
-  // Endpoint for withdrawal
-  @Post('withdraw/:userId')
+  @Post('withdraw/:accountNumber')
   async withdraw(
-    @Param('userId') userId: string,
+    @Param('accountNumber') accountNumber: string,
     @Body() updateAccountDto: UpdateAccountDto,
   ) {
-    return this.accountService.withdraw(Number(userId), updateAccountDto.amount);
+    return this.accountService.withdraw(accountNumber, updateAccountDto.amount);
   }
 }
+

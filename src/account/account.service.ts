@@ -7,49 +7,67 @@ export class AccountService {
 
   constructor(private prisma: PrismaService) {}
 
-  // Retrieves the account associated with a user
-  async getAccountByUserId(userId: number) {
+  async getAccountByNumber(accountNumber: string) {
     const account = await this.prisma.account.findUnique({
-      where: { userId },
+      where: { number: accountNumber },
     });
+
     if (!account) {
-      throw new NotFoundException(`Account for user ${userId} not found`);
+      throw new NotFoundException(`Account with number ${accountNumber} not found`);
     }
+
     return account;
   }
 
-  // Deposit: increases the account balance
-  async deposit(userId: number, amount: number) {
+  async deposit(accountNumber: string, amount: number) {
     if (amount <= 0) {
       throw new BadRequestException('Deposit amount must be positive');
     }
-    const account = await this.getAccountByUserId(userId);
+
+    const account = await this.getAccountByNumber(accountNumber);
+
     const updatedAccount = await this.prisma.account.update({
       where: { id: account.id },
       data: {
         balance: { increment: amount },
       },
     });
-    this.logger.log(`Deposit of ${amount} for user ${userId} successful. New balance: ${updatedAccount.balance}`);
+
+    this.logger.log(
+      `Deposit of ${amount} to account ${accountNumber} successful. New balance: ${updatedAccount.balance}`,
+    );
+
     return updatedAccount;
   }
 
-  // Withdrawal: decreases the account balance, if sufficient funds exist
-  async withdraw(userId: number, amount: number) {
+  async withdraw(accountNumber: string, amount: number) {
     if (amount <= 0) {
       throw new BadRequestException('Withdrawal amount must be positive');
     }
-    const account = await this.getAccountByUserId(userId);
+
+    const account = await this.getAccountByNumber(accountNumber);
+
     if (account.balance < amount) {
       throw new BadRequestException('Insufficient balance for withdrawal');
     }
+
     const updatedAccount = await this.prisma.account.update({
       where: { id: account.id },
       data: {
         balance: { decrement: amount },
       },
     });
-    this.logger.log(`Withdrawal of ${amount} for user ${userId} successful. New balance: ${updatedAccount.balance}`);
+
+    this.logger.log(
+      `Withdrawal of ${amount} from account ${accountNumber} successful. New balance: ${updatedAccount.balance}`,
+    );
+
     return updatedAccount;
   }
+
+  async deleteAccountByUserId(userId: number) {
+    await this.prisma.account.deleteMany({ where: { userId } });
+    this.logger.log(`Account for user ${userId} deleted`);
+  }
 }
+
